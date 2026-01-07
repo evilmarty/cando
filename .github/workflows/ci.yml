@@ -6,32 +6,71 @@ on:
     paths-ignore:
       - "*.md"
       - ".gitignore"
-      - ".devcontainer/**"
-      - ".vscode/**"
+      - "LICENSE"
   pull_request:
     branches: [main]
     paths-ignore:
       - "*.md"
       - ".gitignore"
-      - ".devcontainer/**"
-      - ".vscode/**"
+      - "LICENSE"
 
 jobs:
-  test:
-    name: Test
+  ci:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        otp: ["28"]
-        elixir: ["1.19"]
+        # Source: https://hexdocs.pm/elixir/compatibility-and-deprecations.html#between-elixir-and-erlang-otp
+        elixir-version: [1.14, 1.15, 1.16, 1.17, 1.18]
+        otp-version: [24, 25, 26, 27]
+        lint: [lint]
+        include:
+          - elixir-version: 1.17
+            otp-version: 27
+            lint: lint
+          - elixir-version: 1.19
+            otp-version: 26
+            lint: lint
+          - elixir-version: 1.19
+            otp-version: 27
+            lint: lint
+          - elixir-version: 1.19
+            otp-version: 28
+            lint: lint
+        exclude:
+          - elixir-version: 1.14
+            otp-version: 27
+          - elixir-version: 1.14
+            otp-version: 26
+          - elixir-version: 1.17
+            otp-version: 24
+          - elixir-version: 1.18
+            otp-version: 24
     steps:
       - uses: actions/checkout@v6
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{matrix.elixir}}
-          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir-version}}
+          otp-version: ${{matrix.otp-version}}
+      - name: Restore elixir dependencies cache
+        uses: actions/cache@v5
+        with:
+          path: deps
+          key: ${{runner.os}}-mix-${{matrix.elixir-version}}-${{matrix.otp-version}}-${{hashFiles('**/mix.lock')}}
+          restore-keys: ${{runner.os}}-mix-${{matrix.elixir-version}}-${{matrix.otp-version}}-
       - name: Install dependencies
-        run: mix deps.get
+        run: mix deps.get --only test
+      - name: Check syntax formatting
+        run: mix format --check-formatted
+        if: ${{matrix.lint}}
+      - name: Check for unused dependencies
+        run: mix deps.unlock --check-unused
+        if: ${{matrix.lint}}
+      - name: Compile dependencies
+        run: mix deps.compile
+      - name: Compile
+        run: mix compile --warnings-as-errors
+        if: ${{matrix.lint}}
       - name: Run tests
         run: mix test

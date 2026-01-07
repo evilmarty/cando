@@ -9,7 +9,7 @@ defmodule Canopy.MixProject do
       description: "A simple and extensible permission system for Elixir applications.",
       source_url: @source_url,
       version: "0.1.0",
-      elixir: "~> 1.19",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :test,
       package: package(),
