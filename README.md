@@ -15,10 +15,6 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/cando>.
-
 ## Usage
 
 Implement the `Cando.Permission` protocol for your user or subject structs to define custom permission logic.
@@ -41,14 +37,7 @@ Cando.can?(%MyApp.User{id: 1, role: :admin), :edit_post)  # true
 Cando.can?(%MyApp.User{id: 2, role: :guest), :edit_post)  # false
 ```
 
-### Cando.can?(subject, action)
-Checks if the given subject has permission to perform the specified action.
-
-### Cando.cannot?(subject, action)
-Raises a `PermissionError` if the subject does not have permission to perform the specified action.
-
-### Cando.can!(subject, action)
-Raises a `PermissionError` if the subject has permission to perform the specified action.
+For more information, refer to the [documentation](https://hexdocs.pm/cando).
 
 ## Adding to Phoenix
 
