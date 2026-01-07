@@ -5,7 +5,7 @@ defmodule Canopy.MixProject do
 
   def project do
     [
-      app: :canopy,
+      app: :cando,
       description: "A simple and extensible permission system for Elixir applications.",
       source_url: @source_url,
       version: "0.1.0",
