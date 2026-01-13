@@ -41,7 +41,13 @@ defmodule Cando do
     An error raised when a permission check fails.
     """
 
-    defexception message: "permission denied", subject: nil, action: nil
+    @enforce_keys [:subject, :action]
+    defexception [:subject, :action]
+
+    @impl true
+    def message(%__MODULE__{subject: subject, action: action}) do
+      "Permission denied: #{inspect(subject)} cannot perform action #{inspect(action)}"
+    end
   end
 
   @doc """
@@ -58,14 +64,14 @@ defmodule Cando do
   Raises a `PermissionError` if the subject does not have permission to perform the specified action.
   """
   def can!(subject, action) do
-    can?(subject, action) || raise %PermissionError{subject: subject, action: action}
+    can?(subject, action) || raise PermissionError, subject: subject, action: action
   end
 
   @doc """
   Raises a `PermissionError` if the subject has permission to perform the specified action.
   """
   def cannot!(subject, action) do
-    cannot?(subject, action) || raise %PermissionError{subject: subject, action: action}
+    cannot?(subject, action) || raise PermissionError, subject: subject, action: action
   end
 end
 

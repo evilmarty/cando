@@ -44,7 +44,12 @@ defmodule CandoTest do
 
   describe "can!" do
     test "raises error for unimplemeted module" do
-      assert_raise Cando.PermissionError, fn -> Cando.can!(:foobar, :edit_post) end
+      subject = :foobar
+      action = :edit_post
+
+      assert_raise Cando.PermissionError,
+                   "Permission denied: #{inspect(subject)} cannot perform action #{inspect(action)}",
+                   fn -> Cando.can!(subject, action) end
     end
 
     test "does not raise error for admin user" do
@@ -64,8 +69,12 @@ defmodule CandoTest do
     end
 
     test "raises error for admin user" do
-      user = %ExampleUser{id: 1, role: :admin}
-      assert_raise Cando.PermissionError, fn -> Cando.cannot!(user, :edit_post) end
+      subject = %ExampleUser{id: 1, role: :admin}
+      action = :edit_post
+
+      assert_raise Cando.PermissionError,
+                   "Permission denied: #{inspect(subject)} cannot perform action #{inspect(action)}",
+                   fn -> Cando.cannot!(subject, action) end
     end
 
     test "does not raise error for non-admin user" do
