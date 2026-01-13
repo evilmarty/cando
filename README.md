@@ -54,3 +54,13 @@ end
 ```
 
 You can now access the `can*` functions in your templates and views.
+
+In order to return alternate status codes when `Cando.Permission` is raised simply add the following to your project:
+
+```elixir
+
+defimpl Plug.Exception, for: Cando.PermissionError do
+  def status(_exception), do: 403
+  def actions(_), do: []
+end
+```
